@@ -13,8 +13,6 @@ type Provider struct {
 	mux sync.Mutex
 }
 
-var wg = &sync.WaitGroup{}
-
 func (provider * Provider) getIndex() int {
 	provider.mux.Lock()
 	defer provider.mux.Unlock()
@@ -34,13 +32,15 @@ func (provider * Provider) setIndex(value int) {
 	provider.index = value
 }
 
+var wg = &sync.WaitGroup{}
+
 func main() {
 	var provider = Provider{
 		index: 0,
 		mux:   sync.Mutex{},
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 256; i++ {
 		wg.Add(1)
 		go WorkThread(&provider, "http://name-service.appspot.com/api/v1/names/")
 	}
